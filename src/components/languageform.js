@@ -54,124 +54,128 @@ const LanguageForm = ({ cvData, handleChange, addItem, removeItem, toggleCollaps
   };
 
   return (
-    <div className="mb-4">
-      <h2 className="h5 fw-bold text-primary text-center mt-5 mb-4">Language</h2>
-      <div className="d-flex justify-content-center mb-5">
-        <div className="row row-cols-5 g-3" style={{ maxWidth: '600px' }}>
-          {Object.keys(flagImages).map((code) => {
-            const isAdded = addedLanguages.has(code);
-            const languageData = cvData.find(item => item.language.toLowerCase() === code);
-            return (
-              <div key={code} className="col position-relative">
-                <img
-                  src={flagImages[code]}
-                  alt={`${code} flag`}
-                  className="rounded-circle w-80 h-80 object-fit-cover border border-dark"
-                  style={{ width: '100px', height: '100px', imageRendering: 'pixelated' }}
-                  data-bs-toggle="tooltip"
-                  data-bs-placement="top"
-                  title={languageData ? `${languageData.language} - ${languageData.proficiency}` : `${code.toUpperCase()}`}
+    <div className="container">
+      <div className="p-4">
+        <h2 className="h4 fw-bold text-primary text-center mt-2 mb-4">Language</h2>
+        <div className="d-flex justify-content-center mb-5">
+          <div className="row row-cols-5 g-3" style={{ maxWidth: '600px' }}>
+            {Object.keys(flagImages).map((code) => {
+              const isAdded = addedLanguages.has(code);
+              const languageData = cvData.find(item => item.language.toLowerCase() === code);
+              return (
+                <div key={code} className="col position-relative">
+                  <img
+                    src={flagImages[code]}
+                    alt={`${code} flag`}
+                    className="rounded-circle img-fluid border border-dark"
+                    style={{ width: '100px', height: '100px', objectFit: 'cover' }}
+                    data-bs-toggle="tooltip"
+                    data-bs-placement="top"
+                    title={languageData ? `${languageData.language} - ${languageData.proficiency}` : `${code.toUpperCase()}`}
+                  />
+                  {isAdded && (
+                    <span className="position-absolute top-0 end-0 bg-success rounded-circle text-white p-1" style={{ fontSize: '1.2rem', width: '30px', height: '30px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <i className="bi-check"></i>
+                    </span>
+                  )}
+                  <button
+                    className="btn btn-link position-absolute top-50 start-50 translate-middle text-primary opacity-0 hover-opacity-100"
+                    style={{ width: '60px', height: '60px', padding: 0, background: 'transparent', border: 'none', fontSize: '1.5rem', transition: 'opacity 0.2s' }}
+                    onClick={() => {
+                      if (isAdded) {
+                        const index = cvData.findIndex(item => item.language.toLowerCase() === code);
+                        setEditIndex(index);
+                        setNewLanguage(cvData[index].language);
+                        setNewProficiency(cvData[index].proficiency);
+                        setShowForm(true);
+                      } else {
+                        setNewLanguage(code.toUpperCase());
+                        setShowForm(true);
+                      }
+                    }}
+                  >
+                    +
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+        {showForm && (
+          <div className="card mb-3">
+            <div className="card-body">
+              <div className="mb-3">
+                <label htmlFor="newLanguage" className="form-label fw-medium">Language</label>
+                <input
+                  type="text"
+                  id="newLanguage"
+                  value={newLanguage}
+                  onChange={(e) => setNewLanguage(e.target.value)}
+                  className="form-control form-control-lg shadow-sm"
+                  placeholder="Enter Language (e.g., English)"
+                  required
                 />
-                {isAdded && (
-                  <span className="position-absolute top-0 end-0 bg-success rounded-circle text-white p-1" style={{ fontSize: '1.2rem', width: '30px', height: '30px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <i className="bi-check"></i>
-                  </span>
-                )}
-                <button
-                  className="btn btn-link position-absolute top-50 start-50 translate-middle text-primary opacity-0 hover-opacity-100"
-                  style={{ width: '60px', height: '60px', padding: 0, background: 'transparent', border: 'none', fontSize: '1.5rem', transition: 'opacity 0.2s' }}
-                  onClick={() => {
-                    if (isAdded) {
-                      const index = cvData.findIndex(item => item.language.toLowerCase() === code);
-                      setEditIndex(index);
-                      setNewLanguage(cvData[index].language);
-                      setNewProficiency(cvData[index].proficiency);
-                      setShowForm(true);
-                    } else {
-                      setNewLanguage(code.toUpperCase());
-                      setShowForm(true);
-                    }
-                  }}
+              </div>
+              <div className="mb-3">
+                <label htmlFor="newProficiency" className="form-label fw-medium">Proficiency</label>
+                <select
+                  id="newProficiency"
+                  value={newProficiency}
+                  onChange={(e) => setNewProficiency(e.target.value)}
+                  className="form-select form-select-lg shadow-sm"
+                  required
                 >
-                  +
+                  <option value="">Select Proficiency</option>
+                  <option value="Basic">Basic</option>
+                  <option value="Intermediate">Intermediate</option>
+                  <option value="Fluent">Fluent</option>
+                </select>
+              </div>
+              <div className="d-flex justify-content-center gap-2">
+                <button className="btn btn-primary btn-lg shadow-sm" onClick={handleAddOrEditLanguage}>Save</button>
+                {editIndex !== null && (
+                  <button className="btn btn-danger btn-lg shadow-sm" onClick={handleDeleteLanguage}><FaTrash /></button>
+                )}
+                <button className="btn btn-secondary btn-lg shadow-sm" onClick={() => {
+                  setShowForm(false);
+                  setEditIndex(null);
+                  setNewLanguage('');
+                  setNewProficiency('');
+                }}><FaTimes /></button>
+              </div>
+            </div>
+          </div>
+        )}
+        {cvData.map((item, index) => (
+          <div key={index} className="card mb-3 d-none">
+            <div className="card-header d-flex justify-content-between align-items-center">
+              <h3 className="h6 mb-0 fw-semibold">
+                {item.language || 'Untitled'} ({item.proficiency || 'N/A'})
+              </h3>
+              <div>
+                <button
+                  className="btn btn-link text-primary me-2"
+                  onClick={() => toggleCollapse('language', index)}
+                >
+                  {item.collapsed ? 'Expand' : 'Collapse'}
+                </button>
+                <button
+                  className="btn btn-link text-danger"
+                  onClick={() => removeItem('language', index)}
+                >
+                  Delete
                 </button>
               </div>
-            );
-          })}
-        </div>
+            </div>
+            {!item.collapsed && (
+              <div className="card-body">
+                <p className="mb-0">Language: {item.language || 'N/A'}</p>
+                <p className="mb-0">Proficiency: {item.proficiency || 'N/A'}</p>
+              </div>
+            )}
+          </div>
+        ))}
       </div>
-      {showForm && (
-        <div className="card mb-3">
-          <div className="card-body">
-            <div className="mb-3">
-              <label htmlFor="newLanguage" className="form-label">Language</label>
-              <input
-                type="text"
-                id="newLanguage"
-                value={newLanguage}
-                onChange={(e) => setNewLanguage(e.target.value)}
-                className="form-control"
-                placeholder="Enter Language (e.g., English)"
-              />
-            </div>
-            <div className="mb-3">
-              <label htmlFor="newProficiency" className="form-label">Proficiency</label>
-              <select
-                id="newProficiency"
-                value={newProficiency}
-                onChange={(e) => setNewProficiency(e.target.value)}
-                className="form-select"
-              >
-                <option value="">Select Proficiency</option>
-                <option value="Basic">Basic</option>
-                <option value="Intermediate">Intermediate</option>
-                <option value="Fluent">Fluent</option>
-              </select>
-            </div>
-            <div className="d-flex justify-content-center gap-2">
-              <button className="btn btn-primary" onClick={handleAddOrEditLanguage}>Save</button>
-              {editIndex !== null && (
-                <button className="btn btn-danger" onClick={handleDeleteLanguage}><FaTrash /></button>
-              )}
-              <button className="btn btn-secondary" onClick={() => {
-                setShowForm(false);
-                setEditIndex(null);
-                setNewLanguage('');
-                setNewProficiency('');
-              }}><FaTimes /></button>
-            </div>
-          </div>
-        </div>
-      )}
-      {cvData.map((item, index) => (
-        <div key={index} className="card mb-3 d-none">
-          <div className="card-header d-flex justify-content-between align-items-center">
-            <h3 className="h6 mb-0 fw-semibold">
-              {item.language || 'Untitled'} ({item.proficiency || 'N/A'})
-            </h3>
-            <div>
-              <button
-                className="btn btn-link text-primary me-2"
-                onClick={() => toggleCollapse('language', index)}
-              >
-                {item.collapsed ? 'Expand' : 'Collapse'}
-              </button>
-              <button
-                className="btn btn-link text-danger"
-                onClick={() => removeItem('language', index)}
-              >
-                Delete
-              </button>
-            </div>
-          </div>
-          {!item.collapsed && (
-            <div className="card-body">
-              <p className="mb-0">Language: {item.language || 'N/A'}</p>
-              <p className="mb-0">Proficiency: {item.proficiency || 'N/A'}</p>
-            </div>
-          )}
-        </div>
-      ))}
     </div>
   );
 };
