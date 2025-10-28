@@ -177,7 +177,6 @@ function App() {
         let heightLeft = imgScaledHeight;
         let position = topPadding;
 
-        // Tambahkan gambar pertama
         pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, imgScaledHeight);
         pdf.setFillColor(255, 255, 255);
         pdf.rect(0, 0, pdfWidth, topPadding, 'F');
@@ -185,7 +184,6 @@ function App() {
 
         heightLeft -= contentHeight;
 
-        // Loop untuk halaman tambahan
         while (heightLeft > 0) {
           pdf.addPage();
           position = position - contentHeight;
@@ -201,25 +199,29 @@ function App() {
   };
 
   return (
-    <div className="d-flex p-3 bg-light min-vh-100">
-      <LeftSidebar
-        activeSection={activeSection}
-        setActiveSection={setActiveSection}
-        setShowPreview={setShowPreview}
-        setSelectedSections={setSelectedSections}
-      />
-      <div className="w-75 p-3 bg-white shadow-sm mx-3 rounded-3">
-        <DynamicForm
-          activeSection={activeSection}
-          cvData={cvData}
-          handleChange={handleChange}
-          addItem={addItem}
-          removeItem={removeItem}
-          updateDescription={updateDescription}
-          addDescription={addDescription}
-          removeDescription={removeDescription}
-          toggleCollapse={toggleCollapse}
-        />
+    <div className="container-fluid p-3 bg-light min-vh-100">
+      <div className="row">
+        <div className="col-12 col-md-3">
+          <LeftSidebar
+            activeSection={activeSection}
+            setActiveSection={setActiveSection}
+            setShowPreview={setShowPreview}
+            setSelectedSections={setSelectedSections}
+          />
+        </div>
+        <div className="col-12 col-md-9 p-3">
+          <DynamicForm
+            activeSection={activeSection}
+            cvData={cvData}
+            handleChange={handleChange}
+            addItem={addItem}
+            removeItem={removeItem}
+            updateDescription={updateDescription}
+            addDescription={addDescription}
+            removeDescription={removeDescription}
+            toggleCollapse={toggleCollapse}
+          />
+        </div>
       </div>
       {showPreview && (
         <div className="modal show d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
@@ -229,8 +231,7 @@ function App() {
                 type="button"
                 className="btn-close position-absolute top-0 end-0 m-2"
                 onClick={() => setShowPreview(false)}
-              >
-              </button>
+              ></button>
               <CvPreview cvData={cvData} selectedSections={selectedSections} />
               <button
                 className="btn btn-success mt-3 w-100"
@@ -245,4 +246,5 @@ function App() {
     </div>
   );
 }
+
 export default App;

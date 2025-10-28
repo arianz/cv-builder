@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 
 const LeftSidebar = ({ activeSection, setActiveSection, setShowPreview, setSelectedSections }) => {
+  const [isOpen, setIsOpen] = useState(false); // State untuk toggle sidebar di mobile
   const [selectedSections, setLocalSelectedSections] = useState({
     personalSummary: true,
     education: true,
@@ -20,9 +21,21 @@ const LeftSidebar = ({ activeSection, setActiveSection, setShowPreview, setSelec
   };
 
   return (
-    <div className="w-25 p-3 rounded-3 h-100">
-      <h2 className="h4 fw-bold text-primary text-center mt-3 mb-4">CV Section</h2>
-      <div className="list-group">
+    <div className="p-3 rounded-3 h-100">
+      {/* Tombol Toggle untuk Mobile */}
+      <button
+        className="btn btn-primary d-md-none mb-3 position-fixed"
+        style={{ top: '1rem', left: '1rem', zIndex: 1050 }}
+        onClick={() => setIsOpen(!isOpen)}
+        aria-label={isOpen ? 'Close sidebar' : 'Open sidebar'}
+        aria-expanded={isOpen}
+      >
+        <i className={`bi ${isOpen ? 'bi-x' : 'bi-list'} fs-5`}></i>
+      </button>
+
+      {/* Sidebar Content */}
+      <div className={`list-group ${isOpen ? 'd-block' : 'd-none'} d-md-block`}>
+        <h2 className="h4 fw-bold text-primary text-center mt-3 mb-4">CV Section</h2>
         <label className="list-group-item d-flex align-items-center py-2">
           <button
             className={`list-group-item-action flex-grow-1 ${activeSection === 'personalSummary' ? 'active' : ''}`}
@@ -31,7 +44,7 @@ const LeftSidebar = ({ activeSection, setActiveSection, setShowPreview, setSelec
             onMouseOver={(e) => (e.target.style.color = '#0055FF')}
             onMouseOut={(e) => (e.target.style.color = '')}
           >
-            <i className="bi-person-fill me-3"></i> Personal Summary
+            <i className="bi-person-fill me-2"></i> Personal Summary
           </button>
           <input
             type="checkbox"
@@ -48,7 +61,7 @@ const LeftSidebar = ({ activeSection, setActiveSection, setShowPreview, setSelec
             onMouseOver={(e) => (e.target.style.color = '#0055FF')}
             onMouseOut={(e) => (e.target.style.color = '')}
           >
-            <i className="bi-mortarboard-fill me-3"></i> Education
+            <i className="bi-mortarboard-fill me-2"></i> Education
           </button>
           <input
             type="checkbox"
@@ -65,7 +78,7 @@ const LeftSidebar = ({ activeSection, setActiveSection, setShowPreview, setSelec
             onMouseOver={(e) => (e.target.style.color = '#0055FF')}
             onMouseOut={(e) => (e.target.style.color = '')}
           >
-            <i className="bi-briefcase-fill me-3"></i> Work Experience
+            <i className="bi-briefcase-fill me-2"></i> Work Experience
           </button>
           <input
             type="checkbox"
@@ -82,7 +95,7 @@ const LeftSidebar = ({ activeSection, setActiveSection, setShowPreview, setSelec
             onMouseOver={(e) => (e.target.style.color = '#0055FF')}
             onMouseOut={(e) => (e.target.style.color = '')}
           >
-            <i className="bi-globe2 me-3"></i> Language
+            <i className="bi-globe2 me-2"></i> Language
           </button>
           <input
             type="checkbox"
@@ -99,7 +112,7 @@ const LeftSidebar = ({ activeSection, setActiveSection, setShowPreview, setSelec
             onMouseOver={(e) => (e.target.style.color = '#0055FF')}
             onMouseOut={(e) => (e.target.style.color = '')}
           >
-            <i className="bi-book-fill me-3"></i> Courses
+            <i className="bi-book-fill me-2"></i> Courses
           </button>
           <input
             type="checkbox"
@@ -116,7 +129,7 @@ const LeftSidebar = ({ activeSection, setActiveSection, setShowPreview, setSelec
             onMouseOver={(e) => (e.target.style.color = '#0055FF')}
             onMouseOut={(e) => (e.target.style.color = '')}
           >
-            <i className="bi-tools me-3"></i> Skills
+            <i className="bi-tools me-2"></i> Skills
           </button>
           <input
             type="checkbox"
@@ -137,4 +150,5 @@ const LeftSidebar = ({ activeSection, setActiveSection, setShowPreview, setSelec
     </div>
   );
 };
+
 export default LeftSidebar;

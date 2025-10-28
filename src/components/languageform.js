@@ -8,20 +8,20 @@ const LanguageForm = ({ cvData, handleChange, addItem, removeItem, toggleCollaps
   const [editIndex, setEditIndex] = useState(null);
 
   const flagImages = {
-    'english': 'https://flagcdn.com/w320/gb.png', // UK
-    'spanish': 'https://flagcdn.com/w320/es.png', // Spain
-    'french': 'https://flagcdn.com/w320/fr.png', // France
-    'german': 'https://flagcdn.com/w320/de.png', // Germany
-    'italian': 'https://flagcdn.com/w320/it.png', // Italy
-    'dutch': 'https://flagcdn.com/w320/nl.png', // Netherlands
-    'portuguese': 'https://flagcdn.com/w320/pt.png', // Portugal
-    'russian': 'https://flagcdn.com/w320/ru.png', // Russia
-    'chinese': 'https://flagcdn.com/w320/cn.png', // China
-    'japanese': 'https://flagcdn.com/w320/jp.png', // Japan
-    'korean': 'https://flagcdn.com/w320/kr.png', // South Korea
-    'indonesian': 'https://flagcdn.com/w320/id.png', // Indonesia
-    'arabic': 'https://flagcdn.com/w320/sa.png', // Saudi Arabia
-    'thai': 'https://flagcdn.com/w320/th.png', // Thailand
+    'english': 'https://flagcdn.com/w320/gb.png',
+    'spanish': 'https://flagcdn.com/w320/es.png',
+    'french': 'https://flagcdn.com/w320/fr.png',
+    'german': 'https://flagcdn.com/w320/de.png',
+    'italian': 'https://flagcdn.com/w320/it.png',
+    'dutch': 'https://flagcdn.com/w320/nl.png',
+    'portuguese': 'https://flagcdn.com/w320/pt.png',
+    'russian': 'https://flagcdn.com/w320/ru.png',
+    'chinese': 'https://flagcdn.com/w320/cn.png',
+    'japanese': 'https://flagcdn.com/w320/jp.png',
+    'korean': 'https://flagcdn.com/w320/kr.png',
+    'indonesian': 'https://flagcdn.com/w320/id.png',
+    'arabic': 'https://flagcdn.com/w320/sa.png',
+    'thai': 'https://flagcdn.com/w320/th.png',
   };
 
   const addedLanguages = new Set(cvData.map(item => item.language.toLowerCase()));
@@ -56,9 +56,9 @@ const LanguageForm = ({ cvData, handleChange, addItem, removeItem, toggleCollaps
   return (
     <div className="container">
       <div className="p-4">
-        <h2 className="h4 fw-bold text-primary text-center mt-2 mb-4">Language</h2>
-        <div className="d-flex justify-content-center mb-5">
-          <div className="row row-cols-5 g-3" style={{ maxWidth: '600px' }}>
+        <h2 className="h4 fw-bold text-primary text-center mb-4">Language</h2>
+        <div className="d-flex justify-content-center mb-4">
+          <div className="row row-cols-5 row-cols-md-5 g-3" style={{ maxWidth: '600px' }}>
             {Object.keys(flagImages).map((code) => {
               const isAdded = addedLanguages.has(code);
               const languageData = cvData.find(item => item.language.toLowerCase() === code);
@@ -68,7 +68,13 @@ const LanguageForm = ({ cvData, handleChange, addItem, removeItem, toggleCollaps
                     src={flagImages[code]}
                     alt={`${code} flag`}
                     className="rounded-circle img-fluid border border-dark"
-                    style={{ width: '100px', height: '100px', objectFit: 'cover' }}
+                    style={{
+                      width: '100%',
+                      height: 'auto',
+                      maxWidth: '100px',
+                      aspectRatio: '1 / 1',
+                      objectFit: 'cover'
+                    }}
                     data-bs-toggle="tooltip"
                     data-bs-placement="top"
                     title={languageData ? `${languageData.language} - ${languageData.proficiency}` : `${code.toUpperCase()}`}

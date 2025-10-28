@@ -4,7 +4,7 @@ const PersonalSummaryForm = ({ cvData, handleChange }) => {
   return (
     <div className="container">
       <div className="p-4">
-        <h2 className="h4 fw-bold text-primary text-center my-4">Personal Summary</h2>
+        <h2 className="h4 fw-bold text-primary text-center mb-4">Personal Summary</h2>
         <form>
           <div className="mb-3">
             <label htmlFor="name" className="form-label fw-medium">Full Name</label>

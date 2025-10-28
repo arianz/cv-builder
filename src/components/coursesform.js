@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 import { FaTrash, FaTimes, FaGraduationCap } from 'react-icons/fa';
 
@@ -7,7 +7,7 @@ const CoursesForm = ({ cvData, handleChange, addItem, removeItem }) => {
 
   const handleAddPlaceholder = () => {
     addItem('courses');
-    setSelectedIndex(cvData.length); // Set to the new index after adding
+    setSelectedIndex(cvData.length);
   };
 
   const handleSaveCourse = () => {
@@ -17,87 +17,96 @@ const CoursesForm = ({ cvData, handleChange, addItem, removeItem }) => {
   const handleDeleteCourse = () => {
     if (selectedIndex !== null && removeItem) {
       removeItem('courses', selectedIndex);
-      setSelectedIndex((prev) => {
-        // Reset to null or the new first index if available
-        return cvData.length > 1 ? 0 : null;
-      });
+      setSelectedIndex(cvData.length > 1 ? 0 : null);
     }
   };
 
-  // Effect to reinitialize carousel when cvData changes
-  useEffect(() => {
-  }, [cvData]);
-
   return (
     <div className="container">
-      <div className="p-4">
+      <div className="p-3 p-md-4">
         <h2 className="h4 fw-bold text-primary text-center mb-4">Courses</h2>
+
         {cvData.length === 0 ? (
           <div className="text-center">
             <p className="text-muted">No courses entries yet.</p>
-            <button
-              className="btn btn-primary btn-lg mt-2"
-              onClick={handleAddPlaceholder}
-            >
+            <button className="btn btn-primary btn-lg mt-2" onClick={handleAddPlaceholder}>
               Add Course
             </button>
           </div>
         ) : (
           <>
-            <div
-              id="coursesCarousel"
-              className="carousel slide"
-              data-bs-ride="carousel"
-              style={{ maxWidth: '600px', margin: '0 auto' }}
-            >
-              <div className="carousel-inner">
-                {cvData.map((item, index) => (
-                  <div
-                    key={index}
-                    className={`carousel-item ${index === (selectedIndex !== null ? selectedIndex : 0) ? 'active' : ''}`}
-                  >
+            {/* CAROUSEL RESPONSIF */}
+            <div className="position-relative" style={{ maxWidth: '90%', margin: '0 auto' }}>
+              <div
+                id="coursesCarousel"
+                className="carousel slide"
+                data-bs-ride="false"
+                data-bs-interval="false"
+              >
+                <div className="carousel-inner">
+                  {cvData.map((item, index) => (
                     <div
-                      className="card text-center p-4 border-primary m-lg-auto"
-                      style={{ width: '600px', height: '300px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                      onClick={() => setSelectedIndex(index)}
+                      key={index}
+                      className={`carousel-item ${index === (selectedIndex !== null ? selectedIndex : 0) ? 'active' : ''}`}
                     >
-                      <div className="card-body d-flex flex-column justify-content-center align-items-center">
-                        <FaGraduationCap size={50} className="text-primary mb-3" />
-                        <h5 className="card-title mb-2">{item.courseName || 'Course Name'}</h5>
-                        <p className="card-text text-muted">{item.provider || 'Provider'}</p>
-                        <small className="text-muted">{item.year || 'Year'}</small>
+                      <div
+                        className="card text-center border-primary shadow-sm mx-auto"
+                        style={{
+                          maxWidth: '100%',
+                          height: 'auto',
+                          minHeight: '280px',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          padding: '2rem 1.5rem',
+                        }}
+                        onClick={() => setSelectedIndex(index)}
+                      >
+                        <div className="card-body d-flex flex-column justify-content-center align-items-center">
+                          <FaGraduationCap size={48} className="text-primary mb-3" />
+                          <h5 className="card-title mb-2 fs-5">
+                            {item.courseName || 'Course Name'}
+                          </h5>
+                          <p className="card-text text-muted mb-1">
+                            {item.provider || 'Provider'}
+                          </p>
+                          <small className="text-muted">{item.year || 'Year'}</small>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
+
+                {/* NAVIGATION ARROWS - Hanya muncul jika >1 item */}
+                {cvData.length > 1 && (
+                  <>
+                    <button
+                      className="carousel-control-prev"
+                      type="button"
+                      data-bs-target="#coursesCarousel"
+                      data-bs-slide="prev"
+                    >
+                      <IoIosArrowBack size={28} className="text-dark" />
+                      <span className="visually-hidden">Previous</span>
+                    </button>
+                    <button
+                      className="carousel-control-next"
+                      type="button"
+                      data-bs-target="#coursesCarousel"
+                      data-bs-slide="next"
+                    >
+                      <IoIosArrowForward size={28} className="text-dark" />
+                      <span className="visually-hidden">Next</span>
+                    </button>
+                  </>
+                )}
               </div>
-              {cvData.length > 1 && (
-                <>
-                  <button
-                    className="carousel-control-prev"
-                    type="button"
-                    data-bs-target="#coursesCarousel"
-                    data-bs-slide="prev"
-                    style={{ left: '10px', zIndex: 1 }}
-                  >
-                    <IoIosArrowBack size={20} color='#000' />
-                    <span className="visually-hidden">Previous</span>
-                  </button>
-                  <button
-                    className="carousel-control-next"
-                    type="button"
-                    data-bs-target="#coursesCarousel"
-                    data-bs-slide="next"
-                    style={{ right: '10px', zIndex: 1 }}
-                  >
-                    <IoIosArrowForward size={20} color='#000' />
-                    <span className="visually-hidden">Next</span>
-                  </button>
-                </>
-              )}
             </div>
+
+            {/* FORM EDIT */}
             {selectedIndex !== null && (
-              <div className="card mt-5">
+              <div className="card mt-4 shadow-sm">
                 <div className="card-body">
                   <h5 className="card-title mb-3">Add/Edit Course</h5>
                   <div className="mb-3">
@@ -108,9 +117,8 @@ const CoursesForm = ({ cvData, handleChange, addItem, removeItem }) => {
                       name="courseName"
                       value={cvData[selectedIndex]?.courseName || ''}
                       onChange={(e) => handleChange(e, 'courses', selectedIndex)}
-                      className="form-control form-control-lg shadow-sm"
-                      placeholder="Course Name"
-                      required
+                      className="form-control form-control-lg"
+                      placeholder="e.g., React Mastery"
                     />
                   </div>
                   <div className="mb-3">
@@ -121,9 +129,8 @@ const CoursesForm = ({ cvData, handleChange, addItem, removeItem }) => {
                       name="provider"
                       value={cvData[selectedIndex]?.provider || ''}
                       onChange={(e) => handleChange(e, 'courses', selectedIndex)}
-                      className="form-control form-control-lg shadow-sm"
-                      placeholder="Provider"
-                      required
+                      className="form-control form-control-lg"
+                      placeholder="e.g., Coursera"
                     />
                   </div>
                   <div className="mb-3">
@@ -134,24 +141,28 @@ const CoursesForm = ({ cvData, handleChange, addItem, removeItem }) => {
                       name="year"
                       value={cvData[selectedIndex]?.year || ''}
                       onChange={(e) => handleChange(e, 'courses', selectedIndex)}
-                      className="form-control form-control-lg shadow-sm"
-                      placeholder="Year"
-                      required
+                      className="form-control form-control-lg"
+                      placeholder="e.g., 2024"
                     />
                   </div>
-                  <div className="d-flex justify-content-center gap-2">
-                    <button className="btn btn-primary btn-lg shadow-sm" onClick={handleSaveCourse}>Save</button>
-                    <button className="btn btn-danger btn-lg shadow-sm" onClick={handleDeleteCourse}><FaTrash /></button>
-                    <button className="btn btn-secondary btn-lg shadow-sm" onClick={() => setSelectedIndex(null)}><FaTimes /></button>
+                  <div className="d-flex justify-content-center gap-2 flex-wrap">
+                    <button className="btn btn-primary btn-lg" onClick={handleSaveCourse}>
+                      Save
+                    </button>
+                    <button className="btn btn-danger btn-lg" onClick={handleDeleteCourse}>
+                      <FaTrash />
+                    </button>
+                    <button className="btn btn-secondary btn-lg" onClick={() => setSelectedIndex(null)}>
+                      <FaTimes />
+                    </button>
                   </div>
                 </div>
               </div>
             )}
+
+            {/* ADD BUTTON */}
             <div className="text-center mt-4">
-              <button
-                className="btn btn-primary btn-lg"
-                onClick={handleAddPlaceholder}
-              >
+              <button className="btn btn-primary btn-lg px-4" onClick={handleAddPlaceholder}>
                 Add Course
               </button>
             </div>
