@@ -1,38 +1,78 @@
 import React from 'react';
 
 const CvPreview = ({ cvData, selectedSections }) => {
+
+  const renderSection = (condition, title, content) => {
+    if (!condition) return null;
+    return (
+      <>
+        <h2 className="fw-bold mb-2" style={{ fontSize: '14pt', color: '#000' }}>
+          {title}
+        </h2>
+        {content}
+        <hr style={{ borderTop: '2px solid #000', margin: '1rem 0' }} />
+      </>
+    );
+  };
+
   return (
-    <div id="cv-preview" className="p-4" style={{ fontFamily: 'Arial, sans-serif', fontSize: '10pt', maxWidth: '210mm', margin: '0 auto' }}>
+    <div
+      id="cv-preview"
+      className="p-5"
+      style={{
+        fontFamily: 'Helvetica, Arial, sans-serif',
+        fontSize: '11pt',
+        lineHeight: '1.5',
+        color: '#333',
+        maxWidth: '210mm',
+        margin: '0 auto',
+        background: '#fff',
+      }}
+    >
+      {/* Personal Summary */}
       {selectedSections.personalSummary && (
-        <>
-          <h1 className="text-center fw-bold fs-3">{cvData.personalSummary.name || 'Your Name'}</h1>
-          <p className="text-center mb-4">
+        <div className="text-center mb-3">
+          <h1
+            className="fw-bold mb-2"
+            style={{ fontSize: '24pt', color: '#2c3e50' }}
+          >
+            {cvData.personalSummary.name || 'Your Name'}
+          </h1>
+          <p className="text-muted mb-4" style={{ fontSize: '11pt' }}>
             {cvData.personalSummary.phone || 'Phone N/A'} | {cvData.personalSummary.email || 'Email N/A'}
           </p>
-          <hr className="mb-4" />
-          <h2 className="fw-bold fs-5 mb-2">Summary</h2>
-          <p className="mb-4">{cvData.personalSummary.summary}</p>
-          <hr className="mb-4" />
-        </>
+          <hr style={{ borderTop: '2px solid #000', margin: '1rem 0' }} />
+        </div>
       )}
-      {selectedSections.education && (
+
+      {/* Summary */}
+      {selectedSections.personalSummary && cvData.personalSummary.summary && (
         <>
-          <h2 className="fw-bold fs-5 mb-2">Education</h2>
-          <ul className="list-unstyled">
-            {cvData.education.map((item, index) => (
-              <li key={index} className="mb-2">
-                • {item.field || 'N/A'}, {item.institution || 'N/A'} ({item.startYear || 'N/A'} - {item.endYear || 'N/A'})
-              </li>
-            ))}
-          </ul>
-          <hr className="mb-4" />
+          <h2 className="fw-bold mb-2" style={{ fontSize: '14pt' }}>Summary</h2>
+          <p className="mb-3 text-justify">{cvData.personalSummary.summary}</p>
+          <hr style={{ borderTop: '2px solid #000', margin: '1rem 0' }} />
         </>
       )}
+
+      {/* Education */}
+      {selectedSections.education && cvData.education.length > 0 && renderSection(
+        true,
+        'Education',
+        <div className="row">
+          {cvData.education.map((item, index) => (
+            <div key={index} className={cvData.education.length > 3 ? 'col-md-6 mb-3' : 'col-12'}>
+              <strong>{item.field || 'N/A'}</strong>, {item.institution || 'N/A'} ({item.startYear || 'N/A'} - {item.endYear || 'N/A'})
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Work Experience */}
       {selectedSections.experience && (
         <>
-          <h2 className="fw-bold fs-5 mb-2">Work Experience</h2>
+          <h2 className="fw-bold mb-2" style={{ fontSize: '14pt' }}>Work Experience</h2>
           {cvData.experience.map((item, index) => (
-            <div key={index} className="mb-3">
+            <div key={index}>
               <p className="fw-bold mb-1">{item.position || 'N/A'}</p>
               <p className="mb-1">{item.company || 'N/A'} | {item.startMonth} {item.startYear} – {item.endMonth} {item.endYear || 'N/A'}</p>
               <ul className="list-unstyled">
@@ -42,54 +82,47 @@ const CvPreview = ({ cvData, selectedSections }) => {
               </ul>
             </div>
           ))}
-          <hr className="mb-4" />
+          <hr className="mb-3" style={{ borderTop: '2px solid #1a1a2e' }}/>
         </>
       )}
-      {selectedSections.skills && (
-        <>
-          <h2 className="fw-bold fs-5 mb-2">Skills</h2>
-          <div className="row">
-            <div className="col-md-6">
-              <ul className="list-unstyled">
-                {cvData.skills.slice(0, Math.ceil(cvData.skills.length / 2)).map((item, index) => (
-                  <li key={index} className="mb-1">• {item.skill || 'N/A'} - {item.level || 'N/A'}</li>
-                ))}
-              </ul>
+
+      {/* Skills */}
+      {selectedSections.skills && cvData.skills.length > 0 && renderSection(
+        true,
+        'Skills',
+        <div className="row">
+          {cvData.skills.map((item, index) => (
+            <div key={index} className={cvData.skills.length > 3 ? 'col-md-6' : 'col-12 mb-2'}>
+              • {item.skill || 'N/A'} - {item.level || 'N/A'}
             </div>
-            <div className="col-md-6">
-              <ul className="list-unstyled">
-                {cvData.skills.slice(Math.ceil(cvData.skills.length / 2)).map((item, index) => (
-                  <li key={index} className="mb-1">• {item.skill || 'N/A'} - {item.level || 'N/A'}</li>
-                ))}
-              </ul>
+          ))}
+        </div>
+      )}
+
+      {/* Languages */}
+      {selectedSections.language && cvData.language.length > 0 && renderSection(
+        true,
+        'Languages',
+        <div className="row">
+          {cvData.language.filter(item => item.language && item.proficiency).map((item, index) => (
+            <div key={index} className={cvData.language.length > 3 ? 'col-md-6' : 'col-12 mb-2'}>
+              • {item.language} - {item.proficiency}
             </div>
-          </div>
-          <hr className="mb-4" />
-        </>
+          ))}
+        </div>
       )}
-      {selectedSections.language && (
-        <>
-          <h2 className="fw-bold fs-5 mb-2">Languages</h2>
-          <ul className="list-unstyled">
-            {cvData.language.filter(item => item.language && item.proficiency).map((item, index) => (
-              <li key={index} className="mb-1">• {item.language} - {item.proficiency}</li>
-            ))}
-          </ul>
-          <hr className="mb-4" />
-        </>
-      )}
-      {selectedSections.courses && (
-        <>
-          <h2 className="fw-bold fs-5 mb-2">Courses</h2>
-          <ul className="list-unstyled">
-            {cvData.courses.filter(item => item.courseName && item.provider && item.year).map((item, index) => (
-              <li key={index} className="mb-2">
-                {item.courseName} - {item.provider}, {item.year}
-              </li>
-            ))}
-          </ul>
-          <hr className="mb-4" />
-        </>
+
+      {/* Courses */}
+      {selectedSections.courses && cvData.courses.length > 0 && renderSection(
+        true,
+        'Courses',
+        <div className="row">
+          {cvData.courses.filter(item => item.courseName && item.provider && item.year).map((item, index) => (
+            <div key={index} className={cvData.courses.length > 3 ? 'col-md-6' : 'col-12'}>
+              • {item.courseName} - {item.provider}, {item.year}
+            </div>
+          ))}
+        </div>
       )}
     </div>
   );

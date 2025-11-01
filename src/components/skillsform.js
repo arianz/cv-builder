@@ -1,203 +1,220 @@
 import React, { useState } from 'react';
-import { FaEdit, FaTrash, FaTimes } from 'react-icons/fa';
+import { FaTrash, FaStar, FaEdit } from 'react-icons/fa';
 
-const SkillsForm = ({ cvData, handleChange, addItem, removeItem, initialType }) => {
-  const [selectedSkillIndex, setSelectedSkillIndex] = useState(null);
-  const [selectedType, setSelectedType] = useState(initialType || 'soft');
+const SkillsForm = ({ cvData, handleChange, addItem, removeItem }) => {
+  const [showModal, setShowModal] = useState(false);
+  const [editIndex, setEditIndex] = useState(null);
+  const [tempSkill, setTempSkill] = useState({ skill: '', level: '' });
 
-  const handleAddSkill = (type) => {
-    addItem('skills');
-    setSelectedSkillIndex(cvData.length);
-    setSelectedType(type);
-    handleChange({ target: { name: 'type', value: type } }, 'skills', cvData.length);
+  const openModal = (index = null) => {
+    if (index !== null) {
+      setTempSkill({ skill: cvData[index].skill, level: cvData[index].level });
+      setEditIndex(index);
+    } else {
+      setTempSkill({ skill: '', level: '' });
+      setEditIndex(null);
+    }
+    setShowModal(true);
   };
 
-  const handleSaveSkill = () => {
-    handleChange({ target: { name: 'type', value: selectedType } }, 'skills', selectedSkillIndex);
-    setSelectedSkillIndex(null);
-    setSelectedType(initialType || 'soft');
+  const closeModal = () => {
+    setShowModal(false);
+    setEditIndex(null);
+    setTempSkill({ skill: '', level: '' });
   };
 
-  const handleEditSkill = (index) => {
-    setSelectedSkillIndex(index);
-    setSelectedType(cvData[index].type || 'soft');
-  };
-
-  const handleDeleteSkill = (index) => {
-    if (removeItem && index !== null) {
-      removeItem('skills', index);
-      setSelectedSkillIndex(null);
+  const saveSkill = () => {
+    if (tempSkill.skill && tempSkill.level) {
+      if (editIndex !== null) {
+        handleChange({ target: { name: 'skill', value: tempSkill.skill } }, 'skills', editIndex);
+        handleChange({ target: { name: 'level', value: tempSkill.level } }, 'skills', editIndex);
+      } else {
+        addItem('skills');
+        const newIndex = cvData.length;
+        handleChange({ target: { name: 'skill', value: tempSkill.skill } }, 'skills', newIndex);
+        handleChange({ target: { name: 'level', value: tempSkill.level } }, 'skills', newIndex);
+      }
+      closeModal();
     }
   };
 
-  // Fungsi untuk memotong teks gabungan "nama skill - level" jika melebihi 35 karakter
-  const truncateSkillLevel = (skillName, level) => {
-    const combinedText = `${skillName} - ${level}`;
-    if (combinedText.length > 25) {
-      return combinedText.substring(0, 25) + '...';
-    }
-    return combinedText;
+  const deleteSkill = (index) => {
+    removeItem('skills', index);
+  };
+
+  const getLevelStars = (level) => {
+    const levels = { Beginner: 1, Intermediate: 2, Advanced: 3 };
+    const filled = levels[level] || 0;
+    return (
+      <div className="d-flex gap-1">
+        {[1, 2, 3].map((i) => (
+          <FaStar
+            key={i}
+            size={14}
+            className={i <= filled ? 'text-warning' : 'text-secondary'}
+          />
+        ))}
+      </div>
+    );
   };
 
   return (
-    <div className="container">
-      <div className="p-4">
-        <h2 className="h4 fw-bold text-primary text-center mb-4">Skills</h2>
-        <div className="row g-4">
-          <div className="col-md-6">
-            <div className="card h-100" style={{ maxHeight: '400px', overflowY: 'auto' }}>
-              <div className="card-header bg-primary text-white text-center">
-                <h5 className="mb-0">Soft Skills</h5>
-              </div>
-              <div className="card-body d-flex flex-column">
-                <ul className="list-unstyled flex-grow-1">
-                  {cvData.filter(item => item.type === 'soft').map((item, index) => (
-                    <li key={index} className="mb-3 d-flex justify-content-between align-items-center gap-2 border-bottom pb-3">
-                      <span className="fw-medium">
-                        {cvData.filter(i => i.type === 'soft').indexOf(item) + 1}. {truncateSkillLevel(item.skill, item.level)}
-                      </span>
-                      <div>
-                        <button
-                          className="btn btn-sm btn-outline-secondary me-2"
-                          onClick={() => handleEditSkill(cvData.findIndex(i => i === item))}
-                        >
-                          <FaEdit />
-                        </button>
-                        <button
-                          className="btn btn-sm btn-outline-danger"
-                          onClick={() => handleDeleteSkill(cvData.findIndex(i => i === item))}
-                        >
-                          <FaTrash />
-                        </button>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-                {selectedSkillIndex !== null && selectedType === 'soft' && (
-                  <div>
-                    <div className="mb-3">
-                      <label htmlFor="skill" className="form-label fw-medium">Skill</label>
-                      <input
-                        type="text"
-                        id="skill"
-                        name="skill"
-                        value={cvData[selectedSkillIndex]?.skill || ''}
-                        onChange={(e) => handleChange(e, 'skills', selectedSkillIndex)}
-                        className="form-control form-control-lg"
-                        placeholder="Skill"
-                        maxLength={30}
-                        required
-                      />
-                    </div>
-                    <div className="mb-3">
-                      <label htmlFor="level" className="form-label fw-medium">Level</label>
-                      <select
-                        id="level"
-                        name="level"
-                        value={cvData[selectedSkillIndex]?.level || ''}
-                        onChange={(e) => handleChange(e, 'skills', selectedSkillIndex)}
-                        className="form-select form-select-lg"
-                        required
-                      >
-                        <option value="">Level</option>
-                        <option value="Beginner">Beginner</option>
-                        <option value="Intermediate">Intermediate</option>
-                        <option value="Advanced">Advanced</option>
-                      </select>
-                    </div>
-                    <div className="d-flex gap-2 mb-3">
-                      <button className="btn btn-primary btn-lg" onClick={handleSaveSkill}>Save</button>
-                      <button className="btn btn-secondary btn-lg" onClick={() => setSelectedSkillIndex(null)}><FaTimes /></button>
-                    </div>
+    <div className="p-3 p-md-5">
+      {/* Gradient Title */}
+      <div className="text-center mb-5">
+        <h2
+          className="h3 fw-bold"
+          style={{
+            background: 'linear-gradient(90deg, #6a1b9a, #8e24aa)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+          }}
+        >
+          Skills
+        </h2>
+      </div>
+
+      {/* Skills Grid */}
+      <div className="row g-3">
+        {cvData.map((item, index) => (
+          <div key={index} className="col-12 col-md-6 col-lg-4">
+            <div
+              className="card h-100 shadow-sm border-0 position-relative"
+              style={{
+                background: 'linear-gradient(145deg, rgba(106, 27, 154, 0.3), rgba(106, 27, 154, 0.15))',
+                borderRadius: '16px',
+                transition: 'all 0.3s ease',
+              }}
+            >
+              <div className="card-body p-3 d-flex flex-column">
+                <div className="d-flex justify-content-between align-items-start mb-2">
+                  <h5 className="fw-bold text-light my-auto">
+                    {item.skill || 'Untitled'}
+                  </h5>
+                  <div className="d-flex gap-1">
+                    <button
+                      className="btn btn-sm btn-link text-light p-1"
+                      onClick={() => openModal(index)}
+                    >
+                      <FaEdit />
+                    </button>
+                    <button
+                      className="btn btn-sm btn-link text-danger p-1"
+                      onClick={() => deleteSkill(index)}
+                    >
+                      <FaTrash />
+                    </button>
                   </div>
-                )}
-                {!selectedSkillIndex && (
-                  <button
-                    className="btn btn-outline-primary w-100 mt-auto"
-                    onClick={() => handleAddSkill('soft')}
-                  >
-                    Add Soft Skill
-                  </button>
-                )}
+                </div>
+                <div className="mt-auto">
+                  {getLevelStars(item.level)}
+                </div>
               </div>
             </div>
           </div>
-          <div className="col-md-6">
-            <div className="card h-100" style={{ maxHeight: '400px', overflowY: 'auto' }}>
-              <div className="card-header bg-primary text-white text-center">
-                <h5 className="mb-0">Hard Skills</h5>
+        ))}
+      </div>
+
+      {/* Empty State */}
+      {cvData.length === 0 && (
+        <div className="text-center">
+          <p className="fs-5 mb-4">No skills added yet.</p>
+        </div>
+      )}
+
+      {/* Add Button */}
+      <div className="text-center mt-4">
+        <button
+          className="btn btn-lg px-5 py-3 fw-bold text-white shadow-sm"
+          onClick={() => openModal()}
+          style={{
+            background: 'linear-gradient(135deg, #6a1b9a, #8e24aa)',
+            border: 'none',
+            borderRadius: '12px',
+            transition: 'all 0.3s ease'
+          }}
+          onMouseEnter={(e) => {
+              e.target.style.transform = 'translateY(-3px)';
+              e.target.style.boxShadow = '0 10px 20px rgba(106, 27, 154, 0.4)';
+          }}
+            onMouseLeave={(e) => {
+              e.target.style.transform = 'translateY(0)';
+              e.target.style.boxShadow = '0 4px 10px rgba(0, 0, 0, 0.2)';
+          }}
+        >
+          Add Skill
+        </button>
+      </div>
+
+      {/* Bootstrap Modal */}
+      <div className={`modal fade ${showModal ? 'show d-block' : ''}`} style={{ backgroundColor: 'rgba(0,0,0,0.7)' }} tabIndex="-1">
+        <div className="modal-dialog modal-dialog-centered">
+          <div className="modal-content" style={{
+            background: 'linear-gradient(145deg, #1e1e2d, #1a1a2a)',
+            borderRadius: '16px',
+            border: 'none',
+          }}>
+            <div className="modal-header border-0 pb-2">
+              <h5 className="modal-title text-light fw-bold">
+                {editIndex !== null ? 'Edit Skill' : 'Add New Skill'}
+              </h5>
+              <button
+                type="button"
+                className="btn-close btn-close-white"
+                onClick={closeModal}
+              ></button>
+            </div>
+            <div className="modal-body pt-2">
+              <div className="mb-3">
+                <label className="form-label text-light fw-medium">Skill Name</label>
+                <input
+                  type="text"
+                  className="form-control form-control-lg"
+                  value={tempSkill.skill}
+                  onChange={(e) => setTempSkill({ ...tempSkill, skill: e.target.value })}
+                  placeholder="e.g., Python"
+                  style={{
+                    borderRadius: '12px',
+                    backgroundColor: '#2a2a3a',
+                    border: '2px solid #6a1b9a',
+                    color: '#e0e0e0',
+                  }}
+                  maxLength={30}
+                />
               </div>
-              <div className="card-body d-flex flex-column">
-                <ul className="list-unstyled flex-grow-1">
-                  {cvData.filter(item => item.type === 'hard').map((item, index) => (
-                    <li key={index} className="mb-3 d-flex justify-content-between align-items-center border-bottom pb-3">
-                      <span className="fw-medium">
-                        {cvData.filter(i => i.type === 'hard').indexOf(item) + 1}. {truncateSkillLevel(item.skill, item.level)}
-                      </span>
-                      <div>
-                        <button
-                          className="btn btn-sm btn-outline-secondary me-2"
-                          onClick={() => handleEditSkill(cvData.findIndex(i => i === item))}
-                        >
-                          <FaEdit />
-                        </button>
-                        <button
-                          className="btn btn-sm btn-outline-danger"
-                          onClick={() => handleDeleteSkill(cvData.findIndex(i => i === item))}
-                        >
-                          <FaTrash />
-                        </button>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-                {selectedSkillIndex !== null && selectedType === 'hard' && (
-                  <div>
-                    <div className="mb-3">
-                      <label htmlFor="skill" className="form-label fw-medium">Skill</label>
-                      <input
-                        type="text"
-                        id="skill"
-                        name="skill"
-                        value={cvData[selectedSkillIndex]?.skill || ''}
-                        onChange={(e) => handleChange(e, 'skills', selectedSkillIndex)}
-                        className="form-control form-control-lg"
-                        placeholder="Skill"
-                        maxLength={30}
-                        required
-                      />
-                    </div>
-                    <div className="mb-3">
-                      <label htmlFor="level" className="form-label fw-medium">Level</label>
-                      <select
-                        id="level"
-                        name="level"
-                        value={cvData[selectedSkillIndex]?.level || ''}
-                        onChange={(e) => handleChange(e, 'skills', selectedSkillIndex)}
-                        className="form-select form-select-lg"
-                        required
-                      >
-                        <option value="">Level</option>
-                        <option value="Beginner">Beginner</option>
-                        <option value="Intermediate">Intermediate</option>
-                        <option value="Advanced">Advanced</option>
-                      </select>
-                    </div>
-                    <div className="d-flex gap-2 my-3">
-                      <button className="btn btn-primary btn-lg" onClick={handleSaveSkill}>Save</button>
-                      <button className="btn btn-secondary btn-lg" onClick={() => setSelectedSkillIndex(null)}><FaTimes /></button>
-                    </div>
-                  </div>
-                )}
-                {!selectedSkillIndex && (
-                  <button
-                    className="btn btn-outline-primary w-100 mt-auto"
-                    onClick={() => handleAddSkill('hard')}
-                  >
-                    Add Hard Skill
-                  </button>
-                )}
+              <div className="mb-3">
+                <label className="form-label text-light fw-medium">Proficiency Level</label>
+                <select
+                  className="form-select form-select-lg"
+                  value={tempSkill.level}
+                  onChange={(e) => setTempSkill({ ...tempSkill, level: e.target.value })}
+                  style={{
+                    borderRadius: '12px',
+                    backgroundColor: '#2a2a3a',
+                    border: '2px solid #6a1b9a',
+                    color: '#e0e0e0',
+                  }}
+                >
+                  <option value="">Select Level</option>
+                  <option value="Beginner">Beginner</option>
+                  <option value="Intermediate">Intermediate</option>
+                  <option value="Advanced">Advanced</option>
+                </select>
               </div>
+            </div>
+            <div className="modal-footer border-0 pt-2 pb-4 justify-content-center">
+              <button
+                className="btn btn-lg px-4 py-2 fw-bold text-white"
+                onClick={saveSkill}
+                style={{
+                  background: 'linear-gradient(135deg, #6a1b9a, #8e24aa)',
+                  border: 'none',
+                  borderRadius: '12px',
+                }}
+                disabled={!tempSkill.skill || !tempSkill.level}
+              >
+                {editIndex !== null ? 'Update' : 'Add'} Skill
+              </button>
             </div>
           </div>
         </div>

@@ -1,0 +1,7 @@
+/* index.css */
+.form-control::placeholder,
+.form-select::placeholder,
+textarea::placeholder {
+  color: #bbbbbb !important;
+  opacity: 1;
+}
