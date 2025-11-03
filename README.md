@@ -32,3 +32,12 @@ A simple React-based web application to create and customize a professional CV (
    ```bash
    npm start
    ```
+
+## Screenshots
+|          App Interface - Desktop         |          App Interface - Mobile          |
+|------------------------------------------|------------------------------------------|
+| ![Desktop Display](screenshots/app_interface_desktop.png) | ![Mobile Display](screenshots/app_interface_mobile.jpeg) |
+
+|          Preview CV              |
+|----------------------------------|
+| ![Preview CV](screenshots/preview_cv.png) |
